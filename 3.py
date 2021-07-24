@@ -23,14 +23,18 @@ for i in table.index:
     buf = table['Наименование'][i]
     buf = re.sub("[^А-Яа-я0-9.№ ]", "", str(buf))
     table['Наименование'][i] = buf
-'''
+
+
 for i in table.index:
-    if (table['Наименование'][i] in listorg['Наименование'][i]) or (listorg['Наименование'][i] in table['Наименование'][i]):
-        table['Адрес'][i] = listorg['Юридический адрес'][i].copy
-        table['ИНН'][i] = listorg['ИНН'][i].copy
-        table['Контакты'][i] = listorg['Телефон'][i].copy
-'''
-table = pd.merge(listorg, table, left_on='Наименование', right_on='Наименование', how='outer')
+    #print(table['Наименование'][i],'|', listorg['Наименование'][j])
+    for j in table.index:
+        if (table['Наименование'][i] in listorg['Наименование'][j]) or (listorg['Наименование'][j] in table['Наименование'][i]):
+            table['Адрес'][i] = listorg['Юридический адрес'][j]
+            table['ИНН'][i] = listorg['ИНН'][j]
+            table['Контакты'][i] = listorg['Телефон'][j]
+            continue
+
+#table = pd.merge(listorg, table, left_on='Наименование', right_on='Наименование', how='outer')
 
 # Сохранение фрейма в файл
-table.to_csv('itog.csv', encoding='1251')
+table.to_csv('itog.csv', encoding='utf-8')
