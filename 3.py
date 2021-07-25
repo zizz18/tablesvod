@@ -5,8 +5,8 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_colwidth', None)
 
 # Подключение таблиц
-listorg = pd.read_csv("listorg.csv", delimiter=';', encoding='1251', low_memory=False)
-table = pd.read_csv("table.csv", delimiter=';', encoding='1251', low_memory=False)
+listorg = pd.read_csv("listorg.csv", delimiter=';', encoding='utf-8', low_memory=False)
+table = pd.read_csv("table.csv", delimiter=';', encoding='utf-8', low_memory=False)
 
 # Удаление стобца и не Муниципальных школ
 # month.drop(month.columns[[0, 4]], axis=1, inplace=True)
@@ -15,24 +15,28 @@ table = pd.read_csv("table.csv", delimiter=';', encoding='1251', low_memory=Fals
 # Удаление символов из Месяц
 for i in listorg.index:
     buf = listorg['Наименование'][i]
-    buf = re.sub("[^А-Яа-я0-9.№ ]", "", str(buf))  # почему то она удаляет до слова если стоят после "_" как решить?
+    buf = re.sub("[^А-Яа-я0-9.№]|(РД)", "", str(buf))  # почему то она удаляет до слова если стоят после "_" как решить?
     listorg['Наименование'][i] = buf
-
+listorg.to_csv('lorg2.csv', encoding='utf-8')
 # Удаление символов из Свод
 for i in table.index:
     buf = table['Наименование'][i]
-    buf = re.sub("[^А-Яа-я0-9.№ ]", "", str(buf))
+    buf = re.sub("[^А-Яа-я0-9.№IVX]|(РД)", "", str(buf))
     table['Наименование'][i] = buf
-
+table.to_csv('t2.csv', encoding='utf-8')
 
 for i in table.index:
-    #print(table['Наименование'][i],'|', listorg['Наименование'][j])
+    t1 = table.iloc[i]['Наименование']
     for j in table.index:
-        if (table['Наименование'][i] in listorg['Наименование'][j]) or (listorg['Наименование'][j] in table['Наименование'][i]):
+        l2 = listorg.iloc[j]['Наименование']
+        if (t1.lower() in l2.lower()) or (l2.lower() in t1.lower()):
+            print(t1,' | ',l2)
             table['Адрес'][i] = listorg['Юридический адрес'][j]
             table['ИНН'][i] = listorg['ИНН'][j]
             table['Контакты'][i] = listorg['Телефон'][j]
             continue
+
+#(table[table['Наименование'][i]].str.containt(listorg[listorg['Наименование'][j]].str, case = False)) or (listorg[listorg['Наименование'][j]].str.containt(table[table['Наименование'][i]].str, case = False)):
 
 #table = pd.merge(listorg, table, left_on='Наименование', right_on='Наименование', how='outer')
 
