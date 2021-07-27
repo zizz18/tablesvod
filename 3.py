@@ -11,7 +11,8 @@ table = pd.read_csv("table.csv", delimiter=';', encoding='utf-8', low_memory=Fal
 # Удаление стобца и не Муниципальных школ
 # month.drop(month.columns[[0, 4]], axis=1, inplace=True)
 # month = month.loc[month['Тип собственности'] == 'Муниципальная']
-
+nameorg = listorg['Наименование'].copy()
+print(nameorg.head)
 # Удаление символов из Месяц
 for i in listorg.index:
     buf = listorg['Наименование'][i]
@@ -30,7 +31,7 @@ for i in table.index:
     for j in table.index:
         l2 = listorg.iloc[j]['Наименование']
         if (t1.lower() in l2.lower()) or (l2.lower() in t1.lower()):
-            print(t1,' | ',l2)
+            table['Наименование'][i] = nameorg[j]
             table['Адрес'][i] = listorg['Юридический адрес'][j]
             table['ИНН'][i] = listorg['ИНН'][j]
             table['Контакты'][i] = listorg['Телефон'][j]
@@ -42,3 +43,4 @@ for i in table.index:
 
 # Сохранение фрейма в файл
 table.to_csv('itog.csv', encoding='utf-8')
+print(nameorg.head)
